@@ -1,0 +1,195 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tic Tac Toe</title>
+</head>
+<body>
+    <h1>Tic Tac Toe</h1>
+    <hr>
+    <br>
+    <!-- 3x3 -->
+    <div id="board">
+    </div>
+    <button onclick="setGame()">Zacznij jeszcze raz</button>
+</body>
+</html>
+
+<script>
+    var board;
+    var playerO = "O";
+    var playerX = "X";
+    var currPlayer = playerO;
+    var gameOver = false;
+
+    window.onload = function () {
+        setGame();
+    }
+
+    function setGame() {
+        const boxes = document.querySelectorAll('.tile');
+        boxes.forEach(box => {
+            box.remove();
+        });
+        board = [
+            [' ', ' ', ' '],
+            [' ', ' ', ' '],
+            [' ', ' ', ' ']
+        ]
+
+
+        playerO = "O";
+        playerX = "X";
+        currPlayer = playerO;
+        gameOver = false;
+
+        for (let r = 0; r < 3; r++) {
+            for (let c = 0; c < 3; c++) {
+                let tile = document.createElement("div");
+                tile.id = r.toString() + "-" + c.toString();
+                tile.classList.add("tile");
+                if (r == 0 || r == 1) {
+                    tile.classList.add("horizontal-line");
+                }
+                if (c == 0 || c == 1) {
+                    tile.classList.add("vertical-line");
+                }
+                tile.innerText = "";
+                tile.addEventListener("click", setTile);
+                document.getElementById("board").appendChild(tile);
+            }
+        }
+    }
+
+    function setTile() {
+        if (gameOver) {
+            return;
+        }
+
+        let coords = this.id.split("-");    //ex) "1-2" -> ["1", "2'"]
+        let r = parseInt(coords[0]);
+        let c = parseInt(coords[1]);
+
+        if (board[r][c] != ' ') {
+            //already taken spot
+            return;
+        }
+
+        board[r][c] = currPlayer; //mark the board
+        this.innerText = currPlayer; //mark the board on html
+
+        //change players
+        currPlayer = (currPlayer == playerO) ? playerX : playerO;
+
+        //check winner
+        checkWinner();
+    }
+
+
+    function checkWinner() {
+        //horizontally, check 3 rows
+        for (let r = 0; r < 3; r++) {
+            if (board[r][0] == board[r][1] && board[r][1] == board[r][2] && board[r][0] != ' ') {
+                //if we found the winning row
+                //apply the winner style to that row
+                for (let i = 0; i < 3; i++) {
+                    let tile = document.getElementById(r.toString() + "-" + i.toString());
+                    tile.classList.add("winner");
+                }
+                gameOver = true;
+                return;
+            }
+        }
+
+        //vertically, check 3 columns
+        for (let c = 0; c < 3; c++) {
+            if (board[0][c] == board[1][c] && board[1][c] == board[2][c] && board[0][c] != ' ') {
+                //if we found the winning col
+                //apply the winner style to that col
+                for (let i = 0; i < 3; i++) {
+                    let tile = document.getElementById(i.toString() + "-" + c.toString());
+                    tile.classList.add("winner");
+                }
+                gameOver = true;
+                return;
+            }
+        }
+
+        //diagonally
+        if (board[0][0] == board[1][1] && board[1][1] == board[2][2] && board[0][0] != ' ') {
+            for (let i = 0; i < 3; i++) {
+                let tile = document.getElementById(i.toString() + "-" + i.toString());
+                tile.classList.add("winner");
+            }
+            gameOver = true;
+            return;
+        }
+
+        //anti-diagonally
+        if (board[0][2] == board[1][1] && board[1][1] == board[2][0] && board[0][2] != ' ') {
+            //0-2
+            let tile = document.getElementById("0-2");
+            tile.classList.add("winner");
+
+            //1-1
+            tile = document.getElementById("1-1");
+            tile.classList.add("winner");
+
+            //2-0
+            tile = document.getElementById("2-0");
+            tile.classList.add("winner");
+            gameOver = true;
+            return;
+        }
+    }
+</script>
+
+<style>
+    body {
+        font-family: Arial, Helvetica, sans-serif;
+        text-align: center;
+    }
+
+    hr {
+        width: 500px;
+        height: 2px;
+        background-color: black;
+    }
+
+
+    #board {
+        width: 450px;
+        height: 450px;
+        /* background-color: gray; */
+        margin: 0 auto;
+        display: flex;
+        flex-wrap: wrap;
+    }
+
+    .tile {
+        width: 147px;
+        height: 147px;
+        /* Text */
+        font-size: 150px;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+    }
+
+    .winner {
+        background-color: lightgray;
+        color: red;
+    }
+
+
+    .horizontal-line {
+        border-bottom: 3px solid black;
+    }
+
+    .vertical-line {
+        border-right: 3px solid black;
+    }
+
+</style>
